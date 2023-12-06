@@ -6,10 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Koneksi ke MongoDB
-mongoose.connect('mongodb://localhost:27017/todolist', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose.connect('mongodb://127.0.0.1:27017/todolist').then(() => console.log('Connected!'));
 
 // Definisikan skema untuk tugas
 const todoSchema = new mongoose.Schema({
@@ -17,9 +14,11 @@ const todoSchema = new mongoose.Schema({
   completed: Boolean
 });
 
-const Todo = mongoose.model('Todo', todoSchema);
+const Todo = mongoose.model('todo', todoSchema);
 
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 // Tampilkan halaman utama
 app.get('/', (req, res) => {
@@ -37,7 +36,7 @@ app.post('/api/todos', async (req, res) => {
   const { task } = req.body;
   const newTodo = new Todo({ task, completed: false });
   await newTodo.save();
-  res.json(newTodo);
+  res.json(task);
 });
 
 // API endpoint: Hapus tugas
